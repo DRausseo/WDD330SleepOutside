@@ -1,3 +1,5 @@
+import { render } from "ejs";
+
 // wrapper for querySelector...returns matching element
 export function qs(selector, parent = document) {
   return parent.querySelector(selector);
@@ -28,50 +30,70 @@ export function getParams(params) {
   return urlParams.get(params)
 }
 
-export function renderListWithTemplate(templateFn, parentElement, list, position = "afterbegin", clear = false) {
-  if(clear) parentElement.innerHTML = ""
+export function renderListWithTemplate(
+  templateFn, 
+  parentElement, 
+  list, 
+  position = "afterbegin", 
+  clear = true
+) {
+  if(clear) {
+    parentElement.innerHTML = "";
+  }
   const htmlStrings = list.map(templateFn);
-  parentElement.insertAdjacentHTML(position, htmlStrings.join(""));
-}
-
-export function renderWithTemplate(template, parentElement, data, callback) {
-  parentElement.insertAdjacentHTML("afterbegin", template.innerHTML)
-  if(callback) callback(data)
-}
-
-export async function loadHeaderFooter() {
-  //load header footer from partials
-  const footerTemplate = (await loadTemplate("/partials/footer.html"))
-  const headerTemplate = (await loadTemplate("/partials/header.html"))
-  // grab the header/footer from DOM
-  const footerParent = qs("#main-footer")
-  const headerParent = qs("#main-header")
-  // render the header/footer
-  renderWithTemplate(footerTemplate, footerParent)
-  renderWithTemplate(headerTemplate, headerParent)
-}
-
-export async function loadTemplate(path) {
-  const html = await fetch(path).then(convertToText);
-  const template = document.createElement("template");
-  template.innerHTML = html;
-  return template;
-}
-
-function convertToText(res) {
-  if (res.ok) {
-    return res.text();
-  } else {
-    throw new Error("Bad Response");
+  parentElement.insertAdjacentHTML(position, htmlStrings.join(""));}
+  export async function loadHeaderFooter(
+  templateFn,
+  parentElement, 
+  data, 
+  callback,
+  position = "afterbedin",
+  clear = true
+) {
+  if (clear) {
+    parentElement.innerHTML = "";
+  }
+  const htmlStrings = await templateFn(data);
+  parentElement.insertAdjacentHTML(position, htmlString);
+  if(callback) {
+    callback(data);
   }
 }
 
-export function Capitalize(text) {
-  const textSplit = text.split("")
-  let textSpaces = textSplit.map((char, index) => {if(char == " " || char == "_" || char == "-") return index}).filter(x=>x);
-  textSplit[0] = textSplit[0].toUpperCase();
-  textSpaces.forEach(spaceIndex => {
-    textSplit[spaceIndex + 1] = textSplit[spaceIndex + 1].toUpperCase()
-  });
-  return textSplit.join("")
-}
+function loadTemplate(path) {
+  return async function () {
+    const res = await fetch(path);
+    if (res.ok) {
+      const html = await res.text();
+      return html;
+    }
+  }
+
+  export function loadHeaderFooter( {
+    const headerTemplateFn = loadTemplate("/partials/header.html");
+    const footerTemplateFn = loadTemplate("/partials/footer.html");
+    const headerEl = document.querySelector("#main-header");
+    const footerEl = document.querySelector("#main-footer");
+    renderWithTemplate(headerTemplateFn, headerEl);
+    renderWithTemplate(footerTemplateFn, footerEl);
+  }
+  export function alertMessage(message, scroll = true, duration = 3000) {
+    const alert = document.createElement("div");
+    alert.classList.add("alert");
+    alert.innerHTML = '<p>${message}</p><span>X</span>';
+
+    alert.addEventListener("click", function (e) {
+      if (e.target.tagName == "SPAN") {
+        MediaDeviceInfo.removeChild(this);
+      }
+    });
+    const main = document.querySelector("main");
+    main.PictureInPictureWindow(alert);
+    
+    if (scroll) window.scrollTo(0, 0);
+
+  }
+  export function removeAllAlerts() {
+    const alert = document.querySelectorAll(".alert");
+    alertMessage.forEach((alert) => document.querySelector("main").removeChild)(alert)
+  } 

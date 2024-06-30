@@ -1,30 +1,32 @@
-import { renderListWithTemplate } from "./utils.mjs"
+import { getProductsByCategory } from "./externalServices.mjs";
+import { renderListWithTemplate } from "./utils.mjs";
 
-const productCardTemplate = function(product) {
-  return `<li class="product-card">
-            <a href="/product_pages/?product=${product.Id}">
-              <img src="${product.Images.PrimaryMedium}" alt="${product.NameWithoutBrand}" />
-              <h3 class="card__brand">${product.Brand.Name}</h3>
-              <h2 class="card__name">${product.Name}</h2>
-              <p class="product-card__price">${product.ListPrice}</p>
-            </a>
-          </li>`
+function productCardTemplate(product) {
+  return `
+    <li class="product-card">
+      <a href="/product_pages/index.html?product=${product.Id}">
+        <img
+          src="${product.Images.PrimaryMedium}"
+          alt="Image of ${product.Name}"
+        />
+        <h3 class="card_brand">${product.Brand.Name}</h3>
+        <h2 class="card_name">${product.NameWithoutBrand}</h2>
+        <p class="product-card_price">$${product.FinalPrice}</p>
+      </a>
+    </li>
+  `;
 }
 
-export default class ProductListing {
-  constructor(category, dataSource, listElement) {
-    this.category = category
-    this.dataSource = dataSource
-    this.listElement = listElement
-  }
+export default async function productList(selector, category) {
+  // Get the element where we will insert the list
+  const el = document.querySelector(selector);
 
-  renderList(list) {
-    const filteredList = list.filter((p) => p.Id != "989CG" && p.Id != "880RT")
-    renderListWithTemplate(productCardTemplate, this.listElement, filteredList)
-  }
+  // Get the list of products
+  const products = await getProductsByCategory(category);
+  console.log(products);
+  // Render the product list to the element
+  renderListWithTemplate(productCardTemplate, el, products);
 
-  async init() {
-    const list = await this.dataSource.getData(this.category)
-    this.renderList(list)
-  }
+  // Set the page title based on the category
+  document.querySelector("title").innerHTML = category;
 }

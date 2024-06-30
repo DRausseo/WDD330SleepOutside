@@ -3,20 +3,37 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <title>Sleep Outside | Checkout</title>
-
     <link rel="stylesheet" href="css/style.css" />
+    <script src="../js/checkout.js" type="module"></script>
   </head>
-
   <body>
     <header class="divider" id="main-header"></header>
 
-    <main class="divider">
-      <section class="products">
-        <h2>Review & Place your Order</h2>
+    <main class="divider checkout">
+      <h2>Review & Place your Order</h2>
+      <section class="checkout-form">
+        <fieldset>
+          <legend>Shipping</legend>
+          <div class="checkout_name">
+            <label for="fname">First Name</label>
+            <input name="lname" required />
+            <label for="lname">Last Name</label>
+            <input name="lname" required />
+          </div>
+          <div class="checkout_address">
+            <label for="street">Street</label>
+            <input name="street" required />
+            <label for="city">City</label>
+            <input name="state" required />
+            <label for="zip">Zip</label>
+            <input name="zip" id="zip" required />
+          </div>  
+
+          </div>
+        </fieldset>
+      </section>
       </section>
     </main>
 
