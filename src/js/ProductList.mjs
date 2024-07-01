@@ -2,8 +2,7 @@ import { getProductsByCategory } from "./externalServices.mjs";
 import { renderListWithTemplate } from "./utils.mjs";
 
 function productCardTemplate(product) {
-  return `
-    <li class="product-card">
+  return `<li class="product-card">
       <a href="/product_pages/index.html?product=${product.Id}">
         <img
           src="${product.Images.PrimaryMedium}"
@@ -13,8 +12,7 @@ function productCardTemplate(product) {
         <h2 class="card_name">${product.NameWithoutBrand}</h2>
         <p class="product-card_price">$${product.FinalPrice}</p>
       </a>
-    </li>
-  `;
+    </li>`;
 }
 
 export default async function productList(selector, category) {

@@ -1,5 +1,3 @@
-import { render } from "ejs";
-
 // wrapper for querySelector...returns matching element
 export function qs(selector, parent = document) {
   return parent.querySelector(selector);
@@ -15,6 +13,57 @@ export function getLocalStorage(key) {
 export function setLocalStorage(key, data) {
   localStorage.setItem(key, JSON.stringify(data));
 }
+
+// helper to get parameter strings
+export function getParam(param) {
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const product = urlParams.get(param);
+  return product;
+}
+
+// function to take a list of objects and a template and insert the objects as HTML into the DOM
+export function renderListWithTemplate(
+  templateFn,
+  parentElement,
+  list,
+  position = "afterbegin",
+  clear = false
+) {
+  const htmlStrings = list.map(templateFn);
+  // if clear is true we need to clear out the contents of the parent.
+  if (clear) {
+    parentElement.innerHTML = "";
+  }
+  parentElement.insertAdjacentHTML(position, htmlStrings.join(""));
+}
+
+// function to take an optional object and a template and insert the objects as HTML into the DOM
+export function renderWithTemplate(template, parentElement, data, callback) {
+  parentElement.insertAdjacentHTML("afterbegin", template);
+  //if there is a callback...call it and pass data
+  if (callback) {
+    callback(data);
+  }
+}
+
+async function loadTemplate(path) {
+  const res = await fetch(path);
+  const template = await res.text();
+  return template;
+}
+
+// function to dynamically load the header and footer into a page
+export async function loadHeaderFooter() {
+  const headerTemplate = await loadTemplate("../partials/header.html");
+  const headerElement = document.querySelector("#main-header");
+  const footerTemplate = await loadTemplate("../partials/footer.html");
+  const footerElement = document.querySelector("#main-footer");
+
+  renderWithTemplate(headerTemplate, headerElement);
+  renderWithTemplate(footerTemplate, footerElement);
+}
+
 // set a listener for both touchend and click
 export function setClick(selector, callback) {
   qs(selector).addEventListener("touchend", (event) => {
@@ -23,77 +72,3 @@ export function setClick(selector, callback) {
   });
   qs(selector).addEventListener("click", callback);
 }
-
-export function getParams(params) {
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString)
-  return urlParams.get(params)
-}
-
-export function renderListWithTemplate(
-  templateFn, 
-  parentElement, 
-  list, 
-  position = "afterbegin", 
-  clear = true
-) {
-  if(clear) {
-    parentElement.innerHTML = "";
-  }
-  const htmlStrings = list.map(templateFn);
-  parentElement.insertAdjacentHTML(position, htmlStrings.join(""));}
-  export async function loadHeaderFooter(
-  templateFn,
-  parentElement, 
-  data, 
-  callback,
-  position = "afterbedin",
-  clear = true
-) {
-  if (clear) {
-    parentElement.innerHTML = "";
-  }
-  const htmlStrings = await templateFn(data);
-  parentElement.insertAdjacentHTML(position, htmlString);
-  if(callback) {
-    callback(data);
-  }
-}
-
-function loadTemplate(path) {
-  return async function () {
-    const res = await fetch(path);
-    if (res.ok) {
-      const html = await res.text();
-      return html;
-    }
-  }
-
-  export function loadHeaderFooter( {
-    const headerTemplateFn = loadTemplate("/partials/header.html");
-    const footerTemplateFn = loadTemplate("/partials/footer.html");
-    const headerEl = document.querySelector("#main-header");
-    const footerEl = document.querySelector("#main-footer");
-    renderWithTemplate(headerTemplateFn, headerEl);
-    renderWithTemplate(footerTemplateFn, footerEl);
-  }
-  export function alertMessage(message, scroll = true, duration = 3000) {
-    const alert = document.createElement("div");
-    alert.classList.add("alert");
-    alert.innerHTML = '<p>${message}</p><span>X</span>';
-
-    alert.addEventListener("click", function (e) {
-      if (e.target.tagName == "SPAN") {
-        MediaDeviceInfo.removeChild(this);
-      }
-    });
-    const main = document.querySelector("main");
-    main.PictureInPictureWindow(alert);
-    
-    if (scroll) window.scrollTo(0, 0);
-
-  }
-  export function removeAllAlerts() {
-    const alert = document.querySelectorAll(".alert");
-    alertMessage.forEach((alert) => document.querySelector("main").removeChild)(alert)
-  } 
