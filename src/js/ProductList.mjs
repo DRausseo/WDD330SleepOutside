@@ -1,30 +1,39 @@
-import { getProductsByCategory } from "./externalServices.mjs";
 import { renderListWithTemplate } from "./utils.mjs";
 
 function productCardTemplate(product) {
+  // This function builds the HTML for a single product card
   return `<li class="product-card">
-      <a href="/product_pages/index.html?product=${product.Id}">
-        <img
-          src="${product.Images.PrimaryMedium}"
-          alt="Image of ${product.Name}"
-        />
-        <h3 class="card_brand">${product.Brand.Name}</h3>
-        <h2 class="card_name">${product.NameWithoutBrand}</h2>
-        <p class="product-card_price">$${product.FinalPrice}</p>
-      </a>
-    </li>`;
+    <a href="/product_pages/index.html?product=${product.Id}">
+      <img
+        src="${product.Images.PrimaryMedium}"
+        alt="Image of ${product.Name}"
+      />
+      <h3 class="card__brand">${product.Brand.Name}</h3>
+      <h2 class="card__name">${product.Name}</h2>
+      <p class="product-card__price">$${product.FinalPrice}</p>
+    </a>
+  </li>`;
 }
 
-export default async function productList(selector, category) {
-  // Get the element where we will insert the list
-  const el = document.querySelector(selector);
+export default class ProductList {
+  constructor(category, dataSource, listElement) {
+    // These properties allow for flexibility when using the class
+    this.category = category;
+    this.dataSource = dataSource;
+    this.listElement = listElement;
+  }
 
-  // Get the list of products
-  const products = await getProductsByCategory(category);
-  console.log(products);
-  // Render the product list to the element
-  renderListWithTemplate(productCardTemplate, el, products);
+  async init() {
+    // Get product data based on category
+    const list = await this.dataSource.getData(this.category);
+    // Show the product list
+    this.renderList(list);
+    // Update the title with the current category
+    document.querySelector(".title").innerHTML = this.category;
+  }
 
-  // Set the page title based on the category
-  document.querySelector("title").innerHTML = category;
+  renderList(list) {
+    // Use the helper function to render the list with the product cards
+    renderListWithTemplate(productCardTemplate, this.listElement, list);
+  }
 }
