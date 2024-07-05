@@ -1,7 +1,15 @@
-import { getLocalStorage, loadHeaderFooter } from "./utils.mjs";
-import ShoppingCart from "./ShoppingCart.mjs";
+//used to populate checkout/index.html data
+import CheckoutProcess from './CheckoutProcess.mjs';
+import { loadHeaderFooter } from './utils.mjs';
 
+//Loads in the Header/Footer Templates
 loadHeaderFooter();
 
-const cart = new ShoppingCart("so-cart", ".product-list");
-cart.renderCartContents();
+const checkout = new CheckoutProcess('so-cart');
+checkout.init();
+//checkout.calculateSubTotal();
+
+document.forms['checkout'].addEventListener('submit', (e) => {
+    e.preventDefault();
+    checkout.checkout();
+});
